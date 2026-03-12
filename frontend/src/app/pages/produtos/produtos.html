@@ -1,0 +1,135 @@
+<div class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+  <header class="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md">
+    <div class="max-w-[95%] mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex h-16 items-center justify-between">
+        <div class="flex items-center gap-2 text-primary">
+          <div class="size-8 bg-primary text-white rounded-lg flex items-center justify-center">
+            <span class="material-symbols-outlined">inventory_2</span>
+          </div>
+          <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white">TechSolutio</h1>
+        </div>
+        <div class="flex items-center gap-4">
+          <button (click)="logout()" class="flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors font-medium text-sm">
+            <span class="material-symbols-outlined text-lg">logout</span>
+            <span>Sair</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-[95%] mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="mb-8">
+      <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">Gestão de Produtos</h2>
+      <p class="text-slate-500 dark:text-slate-400">Gerencie o inventário e catálogo da sua empresa.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <div class="lg:col-span-4 space-y-6">
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+          <div class="flex items-center gap-2 mb-6 text-primary">
+            <span class="material-symbols-outlined">{{ editandoId ? 'edit_square' : 'add_circle' }}</span>
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-white">
+              {{ editandoId ? 'Editar Produto' : 'Cadastrar Produto' }}
+            </h3>
+          </div>
+
+          <form [formGroup]="produtoForm" (ngSubmit)="salvarProduto()" class="space-y-4">
+            <div class="space-y-1.5">
+              <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Nome do Produto</label>
+              <input formControlName="nome" class="w-full rounded-lg border-slate-200 dark:border-slate-800 dark:bg-slate-950 focus:border-primary focus:ring-primary text-sm p-2.5" placeholder="Ex: Teclado Gamer G513" type="text"/>
+            </div>
+            
+            <div class="space-y-1.5">
+              <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Marca</label>
+              <input formControlName="marca" class="w-full rounded-lg border-slate-200 dark:border-slate-800 dark:bg-slate-950 focus:border-primary focus:ring-primary text-sm p-2.5" placeholder="Ex: Logitech" type="text"/>
+            </div>
+            
+            <div class="space-y-1.5">
+              <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Valor (R$)</label>
+              <div class="relative">
+                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">R$</span>
+                <input formControlName="valor" class="w-full pl-10 rounded-lg border-slate-200 dark:border-slate-800 dark:bg-slate-950 focus:border-primary focus:ring-primary text-sm p-2.5" placeholder="0.00" step="0.01" type="number"/>
+              </div>
+            </div>
+
+            <button [disabled]="produtoForm.invalid" class="w-full bg-primary hover:bg-primary/90 text-white font-semibold py-3 px-4 rounded-lg transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2 mt-4 disabled:opacity-50" type="submit">
+              <span class="material-symbols-outlined text-xl">save</span>
+              {{ editandoId ? 'Atualizar Produto' : 'Salvar Produto' }}
+            </button>
+
+            @if (editandoId) {
+              <button type="button" (click)="cancelarEdicao()" class="w-full bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold py-2 px-4 rounded-lg transition-all mt-2">
+                Cancelar Edição
+              </button>
+            }
+          </form>
+        </div>
+      </div>
+
+      <div class="lg:col-span-8">
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+          <div class="p-6 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-white">Produtos Cadastrados</h3>
+            
+            @if (carregando) {
+              <span class="text-sm text-primary font-medium flex items-center gap-2">
+                <span class="material-symbols-outlined animate-spin">sync</span> Sincronizando...
+              </span>
+            }
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50 dark:bg-slate-800/50">
+                  <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">ID</th>
+                  <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Nome</th>
+                  <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Marca</th>
+                  <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Valor</th>
+                  <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Criado em</th>
+                  <th class="px-6 py-4 text-xs font-bold text-slate-500 uppercase">Atualizado em</th>
+                  <th class="px-6 py-4 text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-right">Ações</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
+                
+                @for (produto of produtos; track produto.id) {
+                  <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                    <td class="px-6 py-4 text-sm font-medium text-slate-400">#{{ produto.id }}</td>
+                    <td class="px-6 py-4 text-sm font-semibold text-slate-900 dark:text-white">{{ produto.nome }}</td>
+                    <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">{{ produto.marca }}</td>
+                    <td class="px-6 py-4 text-sm font-medium text-slate-900 dark:text-white">{{ produto.valor | currency:'BRL':'symbol' }}</td>
+                    <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                      {{ produto.created_at | date:'dd/MM/yyyy HH:mm' }}
+                    </td>
+                    <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">
+                      {{ produto.updated_at | date:'dd/MM/yyyy HH:mm' }}
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                      <div class="flex items-center justify-end gap-2">
+                        <button (click)="editarProduto(produto)" class="p-2 text-primary hover:bg-primary/10 rounded-lg transition-colors flex items-center gap-1 text-xs font-bold">
+                          <span class="material-symbols-outlined text-lg">edit</span>
+                          <span class="hidden sm:inline">Editar</span>
+                        </button>
+                        <button (click)="excluirProduto(produto.id)" class="p-2 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition-colors flex items-center gap-1 text-xs font-bold">
+                          <span class="material-symbols-outlined text-lg">delete</span>
+                          <span class="hidden sm:inline">Excluir</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="5" class="px-6 py-8 text-center text-slate-500">Nenhum produto encontrado.</td>
+                  </tr>
+                }
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
