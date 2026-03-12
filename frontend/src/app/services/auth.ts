@@ -6,12 +6,12 @@ import { Observable, tap } from 'rxjs';
   providedIn: 'root'
 })
 export class AuthService {
-  // Apontando exatamente para o Blueprint auth_bp do seu Flask
+  
   private apiUrl = 'http://localhost:5000/auth'; 
 
   constructor(private http: HttpClient) { }
 
-  // Espera exatamente o que o auth.py pede: email e senha
+  
   login(credenciais: { email: string; senha: string }): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}/login`, credenciais).pipe(
       tap(response => {

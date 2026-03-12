@@ -21,7 +21,7 @@ export class Login {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router,
-    private cdr: ChangeDetectorRef // <-- Injetado aqui
+    private cdr: ChangeDetectorRef 
   ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
@@ -50,10 +50,10 @@ export class Login {
       },
       error: (err) => {
         this.carregando = false;
-        // Se o Flask não mandar a mensagem de erro exata, usamos uma padrão
+        
         this.erroLogin = err.error?.erro || 'E-mail ou senha inválidos.';
         
-        // <-- Força o Angular a atualizar o HTML na mesma hora! -->
+        
         this.cdr.detectChanges(); 
       }
     });

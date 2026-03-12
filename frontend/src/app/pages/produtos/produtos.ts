@@ -68,9 +68,9 @@ export class Produtos implements OnInit {
       next: () => {
         this.cancelarEdicao(); 
         
-        // Espera o Worker salvar e depois manda buscar a lista nova
+       
         setTimeout(() => {
-          this.carregarProdutos(); // O carregarProdutos já vai desligar o loading!
+          this.carregarProdutos(); 
         }, 1000);
       },
       error: (err) => {
